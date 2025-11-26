@@ -197,4 +197,4 @@ This project is licensed under the MIT License.
 
 ## Authors
 
-- Pablo Ferrari - [GitHub Profile](https://github.com/PabloFerrari027)
+- Pablo Ferrari - [GitHub Profile](https://github.com/PabloFerrari027).
