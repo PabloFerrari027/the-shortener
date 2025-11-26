@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { ShortUrl } from './short-url.entity';
 import { InvalidShortUrlFieldError } from '../errors/invalid-short-url-field.error';
 import { InvalidRangeValueError } from '../errors/invalid-range-value.error';
