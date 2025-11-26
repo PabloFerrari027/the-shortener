@@ -131,8 +131,8 @@ export class ShortUrl {
       case JSONFormats.SNAKE_CASE: {
         const json: ShortUrlJSON<F> = {
           id: this.id,
-          url: this.hash,
-          hash: this.url,
+          url: this.url,
+          hash: this.hash,
           click_count: this.clickCount,
           updated_at: this.updatedAt.toJSON(),
           created_at: this.createdAt.toJSON(),
