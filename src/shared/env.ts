@@ -15,4 +15,7 @@ export class Env {
   static get PORT(): number {
     return Number(process.env.PORT);
   }
+  static get PG_URL(): string {
+    return process.env.PG_URL!;
+  }
 }

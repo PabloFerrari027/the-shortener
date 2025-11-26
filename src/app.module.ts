@@ -7,7 +7,13 @@ import { InMemoryShortUrlRepository } from './modules/shortener/infra/implementa
 
 @Global()
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), ShortenerModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: process.env.NODE_ENV === 'test' ? '.env.test.local' : '.env',
+    }),
+    ShortenerModule,
+  ],
   providers: [
     {
       provide: 'ShortUrlRepository',
