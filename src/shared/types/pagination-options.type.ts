@@ -4,8 +4,7 @@ export enum Order {
 }
 
 export interface PaginationOptions<T> {
-  take?: number;
-  skip?: number;
+  page?: number;
   orderBy?: T;
   order?: Order;
 }
