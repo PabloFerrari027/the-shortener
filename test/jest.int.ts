@@ -5,7 +5,7 @@ const config: JestConfigWithTsJest = {
   testEnvironment: 'node',
   testMatch: ['**/*.int-spec.ts'],
   moduleFileExtensions: ['ts', 'js', 'json'],
-  rootDir: '.',
+  rootDir: '..',
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
@@ -14,7 +14,7 @@ const config: JestConfigWithTsJest = {
   moduleNameMapper: {
     '^src/(.*)$': '<rootDir>/src/$1',
   },
-  roots: ['<rootDir>/src'],
+  roots: ['<rootDir>/src', '<rootDir>/test'],
   passWithNoTests: true,
 };
 

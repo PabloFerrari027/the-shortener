@@ -3,9 +3,9 @@ import type { JestConfigWithTsJest } from 'ts-jest';
 const config: JestConfigWithTsJest = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testMatch: ['**/*.spec.ts'],
+  testMatch: ['**/*.e2e-spec.ts'],
   moduleFileExtensions: ['ts', 'js', 'json'],
-  rootDir: '.',
+  rootDir: '..',
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
@@ -14,8 +14,9 @@ const config: JestConfigWithTsJest = {
   moduleNameMapper: {
     '^src/(.*)$': '<rootDir>/src/$1',
   },
-  roots: ['<rootDir>/src'],
+  roots: ['<rootDir>/src', '<rootDir>/test'],
   passWithNoTests: true,
+  setupFilesAfterEnv: ['<rootDir>/test/global-before-each.ts'],
 };
 
 export default config;
