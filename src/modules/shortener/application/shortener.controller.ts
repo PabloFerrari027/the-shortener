@@ -24,11 +24,11 @@ import { CreateShortUrlService } from './services/create-short-url.service';
 import {
   IsEnum,
   IsInt,
+  IsNotEmpty,
   IsString,
   IsUrl,
   MaxLength,
   Min,
-  MinLength,
 } from 'class-validator';
 import { HandleShortUrlService } from './services/handle-short-url.service';
 import { ShortUrlPresentation } from './presentation/short-url.presentation';
@@ -37,9 +37,10 @@ import { ShortUrlProps } from '../domain/entities/short-url.entity';
 import { Transform } from 'class-transformer';
 
 class CreateShortUrlBody {
-  @ApiProperty({ example: 'http://example.com/long-url', required: false })
+  @ApiProperty({ example: 'http://example.com/long-url', required: true })
+  @IsNotEmpty()
   @IsUrl()
-  url: string;
+  url!: string;
 }
 
 enum Order {
@@ -57,25 +58,25 @@ class ListShortenerUrlsQuery {
   @Transform(({ value }) => Number(value))
   @IsInt()
   @Min(1)
-  page: number;
+  page?: number;
 
   @ApiProperty({ example: 'created_at', required: false })
   @Transform(({ value }) => (value as string).toLowerCase())
   @IsEnum(OrderBy)
-  order_by: OrderBy;
+  order_by?: OrderBy;
 
   @ApiProperty({ example: 'desc', required: false })
   @Transform(({ value }) => (value as string).toLowerCase())
   @IsEnum(Order)
-  order: Order;
+  order?: Order;
 }
 
 class RedirectParams {
-  @ApiProperty({ example: 'abc123', required: false })
+  @ApiProperty({ example: 'abc123', required: true })
   @IsString()
-  @MinLength(1)
-  @MaxLength(10)
-  hash: string;
+  @IsNotEmpty()
+  @MaxLength(6)
+  hash!: string;
 }
 
 @Controller('')
@@ -132,10 +133,12 @@ export class ShortenerController {
   })
   async list(@Query() params: ListShortenerUrlsQuery) {
     const orderByOptions = { created_at: 'createdAt', updated_at: 'updatedAt' };
-    const orderBy = orderByOptions[params.order_by] as keyof ShortUrlProps;
+    const orderBy = orderByOptions[
+      params?.order_by ?? OrderBy.CREATED_AT
+    ] as keyof ShortUrlProps;
 
     const response = await this.listShortnerUrlsService.execute({
-      page: params.page,
+      page: params.page ?? 1,
       order: params.order,
       orderBy,
     });
