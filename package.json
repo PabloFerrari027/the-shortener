@@ -17,6 +17,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test": "npm run test:unit && npm run test:int && npm run test:e2e",
     "test:unit": "cross-env NODE_ENV=TEST-UNIT jest --config ./jest.unit.ts",
     "test:int": "cross-env NODE_ENV=TEST-INT jest --config ./jest.int.ts",
     "test:e2e": "cross-env NODE_ENV=TEST-E2E jest --config ./jest.e2e.ts",
