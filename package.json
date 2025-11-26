@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "setup": "npx tsx ./scripts/setup.ts",
+    "setup": "node ./scripts/setup.js",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -18,16 +18,23 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test": "npm run test:unit && npm run test:int && npm run test:e2e",
-    "test:unit": "cross-env NODE_ENV=TEST-UNIT jest --config ./jest.unit.ts",
-    "test:int": "cross-env NODE_ENV=TEST-INT jest --config ./jest.int.ts",
-    "test:e2e": "cross-env NODE_ENV=TEST-E2E jest --config ./jest.e2e.ts",
+    "test:unit": "cross-env NODE_ENV=TEST-UNIT jest --config test/jest.unit.ts",
+    "test:int": "cross-env NODE_ENV=TEST-INT jest --config test/jest.int.ts",
+    "test:e2e": "cross-env NODE_ENV=TEST-E2E jest --config test/jest.e2e.ts",
     "commit": "cz",
     "release": "standard-version",
     "release:minor": "standard-version --release-as minor",
     "release:patch": "standard-version --release-as patch",
     "release:major": "standard-version --release-as major",
     "release:first": "standard-version --first-release",
-    "prepare": "husky"
+    "prepare": "husky",
+    "docker:compose:prod": "docker compose --project-name the-shortener-prod -f .docker/docker-compose.prod.yml up -d",
+    "docker:compose:test": "docker compose --project-name the-shortener-test -f .docker/docker-compose.test.yml up -d",
+    "docker:compose": "npm run docker:compose:prod && npm run docker:compose:test",
+    "prisma:migrate:dev": "npx prisma migrate dev",
+    "prisma:migrate:deploy": "npx prisma migrate deploy",
+    "prisma:generate": "npx prisma generate",
+    "prisma:studio": "npx prisma studio"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -35,8 +42,13 @@
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.2.3",
+    "@prisma/adapter-pg": "^7.0.1",
+    "@prisma/client": "^7.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",
+    "cross-env": "^10.1.0",
+    "pg": "^8.16.3",
+    "prisma": "^6.19.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
@@ -51,10 +63,10 @@
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.10.7",
+    "@types/pg": "^8.15.6",
     "@types/supertest": "^6.0.2",
     "commitizen": "^4.3.1",
-    "cross-env": "^10.1.0",
-    "cz-conventional-changelog": "^3.3.0",
+    "cz-conventional-changelog": "^3.0.1",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",
@@ -93,7 +105,8 @@
       "^src/(.*)$": "<rootDir>/src/$1"
     },
     "roots": [
-      "<rootDir>/src"
+      "<rootDir>/src",
+      "<rootDir>/test"
     ]
   },
   "config": {
