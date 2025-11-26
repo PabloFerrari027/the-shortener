@@ -17,6 +17,10 @@ export class InMemoryShortUrlRepository implements ShortUrlRepository {
     return this.items.find((i) => i.hash === hash) ?? null;
   }
 
+  async findById(id: string): Promise<ShortUrl | null> {
+    return this.items.find((i) => i.id === id) ?? null;
+  }
+
   async update(shortUrl: ShortUrl): Promise<void> {
     this.items = this.items.map((i) => (i.id === shortUrl.id ? shortUrl : i));
   }

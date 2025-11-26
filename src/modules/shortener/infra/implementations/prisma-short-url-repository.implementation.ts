@@ -8,6 +8,9 @@ export class PrismaShortUrlRepository implements ShortUrlRepository {
   findByHash(hash: string): Promise<ShortUrl | null> {
     throw new Error('Method not implemented.');
   }
+  findById(id: string): Promise<ShortUrl | null> {
+    throw new Error('Method not implemented.');
+  }
   update(shortUrl: ShortUrl): Promise<void> {
     throw new Error('Method not implemented.');
   }
