@@ -4,7 +4,7 @@ import { ShortUrl } from '../../domain/entities/short-url.entity';
 import { ShortUrlNotFoundError } from '../../domain/errors/short-url-not-found.error';
 
 type Input = { hash: string };
-type Output = ShortUrl;
+type Output = { shortUrl: ShortUrl };
 
 @Injectable()
 export class HandleShortUrlService {
@@ -20,6 +20,6 @@ export class HandleShortUrlService {
 
     shortUrl.incrementClickCount();
     await this.shortUrlRepository.update(shortUrl);
-    return shortUrl;
+    return { shortUrl };
   }
 }
