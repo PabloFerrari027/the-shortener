@@ -7,6 +7,7 @@ import {
   Injectable,
   Param,
   Post,
+  Query,
   Redirect,
 } from '@nestjs/common';
 import {
@@ -20,14 +21,53 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { CreateShortUrlService } from './services/create-short-url.service';
-import { IsString, IsUrl, MaxLength, MinLength } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsString,
+  IsUrl,
+  MaxLength,
+  Min,
+  MinLength,
+} from 'class-validator';
 import { HandleShortUrlService } from './services/handle-short-url.service';
 import { ShortUrlPresentation } from './presentation/short-url.presentation';
+import { ListShortnerUrlsService } from './services/list-shortner-urls.service';
+import { ShortUrlProps } from '../domain/entities/short-url.entity';
+import { Transform } from 'class-transformer';
 
 class CreateShortUrlBody {
   @ApiProperty({ example: 'http://example.com/long-url', required: false })
   @IsUrl()
   url: string;
+}
+
+enum Order {
+  ASC = 'asc',
+  DESC = 'desc',
+}
+
+enum OrderBy {
+  CREATED_AT = 'created_at',
+  UPDATED_AT = 'updated_at',
+}
+
+class ListShortenerUrlsQuery {
+  @ApiProperty({ example: 1, required: false })
+  @Transform(({ value }) => Number(value))
+  @IsInt()
+  @Min(1)
+  page: number;
+
+  @ApiProperty({ example: 'created_at', required: false })
+  @Transform(({ value }) => (value as string).toLowerCase())
+  @IsEnum(OrderBy)
+  order_by: OrderBy;
+
+  @ApiProperty({ example: 'desc', required: false })
+  @Transform(({ value }) => (value as string).toLowerCase())
+  @IsEnum(Order)
+  order: Order;
 }
 
 class RedirectParams {
@@ -64,6 +104,8 @@ export class ShortenerController {
     @Inject()
     private readonly createShortUrlService: CreateShortUrlService,
     @Inject()
+    private readonly listShortnerUrlsService: ListShortnerUrlsService,
+    @Inject()
     private readonly handleShortUrlService: HandleShortUrlService,
   ) {}
 
@@ -79,6 +121,31 @@ export class ShortenerController {
     });
 
     const output = ShortUrlPresentation.toController(response.shortUrl);
+    return output;
+  }
+
+  @Get('/shortener')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'List shotener urls' })
+  @ApiOkResponse({
+    description: 'Shortened URLs successfully listed.',
+  })
+  async list(@Query() params: ListShortenerUrlsQuery) {
+    const orderByOptions = { created_at: 'createdAt', updated_at: 'updatedAt' };
+    const orderBy = orderByOptions[params.order_by] as keyof ShortUrlProps;
+
+    const response = await this.listShortnerUrlsService.execute({
+      page: params.page,
+      order: params.order,
+      orderBy,
+    });
+
+    const output = ShortUrlPresentation.toController(
+      response.data,
+      response.totalPages,
+      response.currentPage,
+    );
+
     return output;
   }
 
