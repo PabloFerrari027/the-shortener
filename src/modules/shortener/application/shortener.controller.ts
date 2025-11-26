@@ -22,6 +22,7 @@ import {
 import { CreateShortUrlService } from './services/create-short-url.service';
 import { IsString, IsUrl, MaxLength, MinLength } from 'class-validator';
 import { HandleShortUrlService } from './services/handle-short-url.service';
+import { ShortUrlPresentation } from './presentation/short-url.presentation';
 
 class CreateShortUrlBody {
   @ApiProperty({ example: 'http://example.com/long-url', required: false })
@@ -76,7 +77,9 @@ export class ShortenerController {
     const response = await this.createShortUrlService.execute({
       url: body.url,
     });
-    return { short_url: response.shortUrl };
+
+    const output = ShortUrlPresentation.toController(response.shortUrl);
+    return output;
   }
 
   @Get('/:hash')
@@ -93,6 +96,6 @@ export class ShortenerController {
 
     if (!response) return null;
 
-    return { url: response.url };
+    return { url: response.shortUrl.url };
   }
 }
