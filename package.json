@@ -14,11 +14,12 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:unit": "cross-env NODE_ENV=TEST-UNIT jest --config ./jest.unit.ts",
+    "test:int": "cross-env NODE_ENV=TEST-INT jest --config ./jest.int.ts",
+    "test:e2e": "cross-env NODE_ENV=TEST-E2E jest --config ./jest.e2e.ts",
     "commit": "cz",
     "release": "standard-version",
     "release:minor": "standard-version --release-as minor",
@@ -51,18 +52,19 @@
     "@types/node": "^22.10.7",
     "@types/supertest": "^6.0.2",
     "commitizen": "^4.3.1",
+    "cross-env": "^10.1.0",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",
     "globals": "^16.0.0",
     "husky": "^9.1.7",
-    "jest": "^30.0.0",
+    "jest": "^30.2.0",
     "prettier": "^3.4.2",
     "source-map-support": "^0.5.21",
     "standard-version": "^9.5.0",
     "supertest": "^7.0.0",
-    "ts-jest": "^29.2.5",
+    "ts-jest": "^29.4.5",
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
@@ -76,7 +78,7 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "rootDir": ".",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
@@ -85,7 +87,13 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/src/$1"
+    },
+    "roots": [
+      "<rootDir>/src"
+    ]
   },
   "config": {
     "commitizen": {
