@@ -12,12 +12,14 @@ import { InMemoryShortUrlRepository } from './modules/shortener/infra/implementa
     {
       provide: 'ShortUrlRepository',
       useFactory() {
-        // switch (Env.NODE_ENV) {
-        //   case NODE_ENV.DEVELOPMENT || NODE_ENV.PRODUCTION:
-        //     return new PrismaShortUrlRepository();
-        //   case NODE_ENV['TEST-E2E'] || NODE_ENV['TEST-UNIT']:
-        return new InMemoryShortUrlRepository();
-        // }
+        switch (Env.NODE_ENV) {
+          case NODE_ENV.DEVELOPMENT ||
+            NODE_ENV.PRODUCTION ||
+            NODE_ENV['TEST-E2E']:
+            return new PrismaShortUrlRepository();
+          case NODE_ENV['TEST-UNIT']:
+            return new InMemoryShortUrlRepository();
+        }
       },
     },
   ],
