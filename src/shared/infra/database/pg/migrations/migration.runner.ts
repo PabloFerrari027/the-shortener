@@ -25,7 +25,7 @@ export class MigrationRunner {
     await this.createMigrationsTable();
     const executed = await this.getExecutedMigrations();
 
-    for (const [index, migration] of migrations.entries()) {
+    for (const migration of migrations.values()) {
       const migrationName = migration.constructor.name;
 
       if (!executed.includes(migrationName)) {
