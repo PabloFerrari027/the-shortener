@@ -4,7 +4,7 @@ import * as dotenv from 'dotenv';
 import { colors } from './colors';
 import { log } from 'console';
 
-dotenv.config();
+if (!process.env.CI) dotenv.config();
 
 async function runMigrations() {
   try {
