@@ -1,11 +1,13 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Inject,
   Injectable,
   Param,
+  Patch,
   Post,
   Query,
   Redirect,
@@ -28,6 +30,7 @@ import {
   IsNotEmpty,
   IsString,
   IsUrl,
+  IsUUID,
   MaxLength,
   Min,
 } from 'class-validator';
@@ -36,6 +39,8 @@ import { ShortUrlPresentation } from './presentation/short-url.presentation';
 import { ListShortnerUrlsService } from './services/list-shortner-urls.service';
 import { ShortUrlProps } from '../domain/entities/short-url.entity';
 import { Transform } from 'class-transformer';
+import { DeleteShortUrlService } from './services/delete-short-url.service';
+import { UpdateShortUrlService } from './services/update-short-url.service';
 
 class ShortUrl {
   @ApiProperty({
@@ -108,6 +113,23 @@ class CreateShortUrlBody {
   url!: string;
 }
 
+class UpdateShortUrlBody {
+  @ApiProperty({ example: 'http://example.com/new-long-url', required: true })
+  @IsNotEmpty()
+  @IsUrl()
+  url!: string;
+}
+
+class IdParam {
+  @ApiProperty({
+    example: 'b7f9d2a3-4567-8901-abcd-ef2345678901',
+    required: true,
+  })
+  @IsUUID()
+  @IsNotEmpty()
+  id: string;
+}
+
 enum Order {
   ASC = 'asc',
   DESC = 'desc',
@@ -173,6 +195,10 @@ export class ShortUrlController {
     private readonly listShortnerUrlsService: ListShortnerUrlsService,
     @Inject()
     private readonly handleShortUrlService: HandleShortUrlService,
+    @Inject()
+    private readonly updateShortUrlService: UpdateShortUrlService,
+    @Inject()
+    private readonly deleteShortUrlService: DeleteShortUrlService,
   ) {}
 
   @Post('/short-url')
@@ -217,6 +243,35 @@ export class ShortUrlController {
     );
 
     return output;
+  }
+
+  @Patch('/short-url/:id')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Update a short url' })
+  @ApiOkResponse({
+    description: 'Short url updated successfully',
+    type: ShortUrl,
+  })
+  async update(@Param() params: IdParam, @Body() body: UpdateShortUrlBody) {
+    const response = await this.updateShortUrlService.execute({
+      id: params.id,
+      url: body.url,
+    });
+
+    const output = ShortUrlPresentation.toController(response.shortUrl);
+    return output;
+  }
+
+  @Delete('/short-url/:id')
+  @HttpCode(204)
+  @ApiOperation({ summary: 'Delete a short url' })
+  @ApiOkResponse({
+    description: 'Short url deleted successfully',
+  })
+  async delete(@Param() params: IdParam) {
+    await this.deleteShortUrlService.execute({
+      id: params.id,
+    });
   }
 
   @Get('/:hash')
