@@ -8,6 +8,7 @@ import {
   Get,
   Put,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -24,6 +25,8 @@ import { ListUsersService } from './services/list-users.service';
 import { RemoveUserService } from './services/remove-user.service';
 import { UpdateUserService } from './services/update-user.service';
 import { UserPresentation } from './presentation/user.presentation';
+import { AdminGuard } from '@/modules/auth/infra/guards/role.guard';
+import { AuthGuard } from '@/modules/auth/infra/guards/auth.guard';
 
 class User {
   @ApiProperty({
@@ -132,6 +135,8 @@ class ListUsersQuery {
 }
 
 @Controller('users')
+@UseGuards(AuthGuard)
+@UseGuards(AdminGuard)
 @Injectable()
 @ApiBadRequestResponse({
   description: 'The request could not be processed due to invalid input.',
