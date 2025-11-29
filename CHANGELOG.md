@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.0](https://github.com/PabloFerrari027/the-shortener-02/compare/v3.0.0...v4.0.0) (2025-11-29)
+
+
+### ✅ Testes
+
+* add authentication guard tests to controller ([df0f139](https://github.com/PabloFerrari027/the-shortener-02/commit/df0f13945502e9ce240e7e3db5b4cf7b1ac69fcc))
+
+
+### 🐛 Correções
+
+* fixes local Git conflicts ([e3b4081](https://github.com/PabloFerrari027/the-shortener-02/commit/e3b408134640b9dcde74e758e302a3f0a0fd61a6))
+
+
+### ✨ Novidades
+
+* add AdminGuard for role-based access control ([3e19e21](https://github.com/PabloFerrari027/the-shortener-02/commit/3e19e21959cd3abde796738efa0cbb9d405f831c))
+* add authentication and authorization guards to users controller ([523b75d](https://github.com/PabloFerrari027/the-shortener-02/commit/523b75d54652079b99cca237303a120df40436e7))
+* add authentication guard to protected endpoints ([de11d71](https://github.com/PabloFerrari027/the-shortener-02/commit/de11d71b4a99411c6433d8a568ee1a9fbee70a6a))
+* implement authentication and authorization for user management ([6fd0f3f](https://github.com/PabloFerrari027/the-shortener-02/commit/6fd0f3f802f0a9b220e977ef9e8d923700c42af4))
+
 ## [3.0.0](https://github.com/PabloFerrari027/the-shortener-02/compare/v2.0.0...v3.0.0) (2025-11-29)
 
 
