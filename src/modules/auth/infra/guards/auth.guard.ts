@@ -19,7 +19,7 @@ export class AuthGuard implements CanActivate {
   constructor(
     @Inject('EncodingPort')
     private readonly encodingPort: EncodingPort,
-    @Inject()
+    @Inject('SessionsRepository')
     private readonly sessionsRepository: SessionsRepository,
   ) {}
 
@@ -46,7 +46,7 @@ export class AuthGuard implements CanActivate {
       }
 
       const isExpired =
-        new Date(payload.expiresAt).getTime() > new Date().getTime();
+        new Date(payload.expiresAt).getTime() < new Date().getTime();
 
       if (isExpired) throw new UnauthorizedError();
 
