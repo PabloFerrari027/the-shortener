@@ -6,7 +6,7 @@ import { Session } from '../../domain/entities/session.entity';
 import { UserNotFoundError } from 'src/modules/users/domain/errors/user-not-found.error';
 import type { EncodingPort } from '@/shared/ports/encoding.port';
 import { UnauthorizedError } from '../../domain/erros/unauthorized.error';
-import type { HasherPort } from '@/shared/ports/hasher.port ';
+import type { HasherPort } from '@/shared/ports/hasher.port';
 
 type Input = {
   email: string;

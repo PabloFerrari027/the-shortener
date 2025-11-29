@@ -3,7 +3,7 @@ import { LoginService } from './login.service';
 import type { UsersRepository } from 'src/modules/users/domain/repositories/users.repository';
 import type { SessionsRepository } from '../../domain/repositories/sessions.repository';
 import type { EncodingPort } from '@/shared/ports/encoding.port';
-import type { HasherPort } from '@/shared/ports/hasher.port ';
+import type { HasherPort } from '@/shared/ports/hasher.port';
 import { Bus } from 'src/shared/domain-events/bus';
 import { Session } from '../../domain/entities/session.entity';
 import { User } from 'src/modules/users/domain/entities/user.entity';

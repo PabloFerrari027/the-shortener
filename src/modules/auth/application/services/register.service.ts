@@ -9,7 +9,7 @@ import { Session } from '../../domain/entities/session.entity';
 import { Bus } from '@/shared/domain-events/bus';
 import type { EncodingPort } from '@/shared/ports/encoding.port';
 import { Password } from '@/modules/users/domain/value-objects/password.value-object';
-import type { HasherPort } from '@/shared/ports/hasher.port ';
+import type { HasherPort } from '@/shared/ports/hasher.port';
 
 type Input = {
   name: string;

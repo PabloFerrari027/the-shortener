@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { HasherPort } from '@/shared/ports/hasher.port ';
+import { HasherPort } from '@/shared/ports/hasher.port';
 
 export class BcrtiptHasherAdapter implements HasherPort {
   async hash(value: string): Promise<string> {
