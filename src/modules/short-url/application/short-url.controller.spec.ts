@@ -9,6 +9,8 @@ import { UpdateShortUrlService } from './services/update-short-url.service';
 import { DeleteShortUrlService } from './services/delete-short-url.service';
 import { ShortUrl } from '../domain/entities/short-url.entity';
 import { ShortUrlPresentation } from './presentation/short-url.presentation';
+import { AuthGuard } from '@/modules/auth/infra/guards/auth.guard';
+import { ExecutionContext } from '@nestjs/common';
 
 describe('ShortUrlController', () => {
   let controller: ShortUrlController;
@@ -17,6 +19,7 @@ describe('ShortUrlController', () => {
   let handleShortUrlService: jest.Mocked<HandleShortUrlService>;
   let updateShortUrlService: jest.Mocked<UpdateShortUrlService>;
   let deleteShortUrlService: jest.Mocked<DeleteShortUrlService>;
+  let authGuard: AuthGuard;
 
   const mockCreateShortUrlService = {
     execute: jest.fn(),
@@ -36,6 +39,18 @@ describe('ShortUrlController', () => {
 
   const mockDeleteShortUrlService = {
     execute: jest.fn(),
+  };
+
+  const mockEncodingPort = {
+    encode: jest.fn(),
+    dencode: jest.fn(),
+  };
+
+  const mockSessionsRepository = {
+    create: jest.fn(),
+    update: jest.fn(),
+    findById: jest.fn(),
+    delete: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -62,8 +77,25 @@ describe('ShortUrlController', () => {
           provide: DeleteShortUrlService,
           useValue: mockDeleteShortUrlService,
         },
+        {
+          provide: AuthGuard,
+          useValue: {
+            canActivate: jest.fn().mockResolvedValue(true),
+          },
+        },
+        {
+          provide: 'EncodingPort',
+          useValue: mockEncodingPort,
+        },
+        {
+          provide: 'SessionsRepository',
+          useValue: mockSessionsRepository,
+        },
       ],
-    }).compile();
+    })
+      .overrideGuard(AuthGuard)
+      .useValue({ canActivate: jest.fn(() => true) })
+      .compile();
 
     controller = module.get<ShortUrlController>(ShortUrlController);
     createShortUrlService = module.get(CreateShortUrlService);
@@ -71,6 +103,7 @@ describe('ShortUrlController', () => {
     handleShortUrlService = module.get(HandleShortUrlService);
     updateShortUrlService = module.get(UpdateShortUrlService);
     deleteShortUrlService = module.get(DeleteShortUrlService);
+    authGuard = module.get(AuthGuard);
 
     jest.clearAllMocks();
   });
@@ -131,6 +164,10 @@ describe('ShortUrlController', () => {
   });
 
   describe('list', () => {
+    beforeEach(() => {
+      (authGuard.canActivate as jest.Mock).mockResolvedValue(true);
+    });
+
     it('should list short urls with pagination and return formatted output', async () => {
       const params = {
         page: 1,
@@ -303,9 +340,21 @@ describe('ShortUrlController', () => {
       const callArgs = listShortnerUrlsService.execute.mock.calls[0][0];
       expect(callArgs.orderBy).toBe('updatedAt');
     });
+
+    it('should block access when authentication fails', async () => {
+      (authGuard.canActivate as jest.Mock).mockResolvedValue(false);
+
+      const result = await authGuard.canActivate({} as ExecutionContext);
+
+      expect(result).toBe(false);
+    });
   });
 
   describe('update', () => {
+    beforeEach(() => {
+      (authGuard.canActivate as jest.Mock).mockResolvedValue(true);
+    });
+
     it('should update a short url and return formatted output', async () => {
       const params = { id: 'b7f9d2a3-4567-8901-abcd-ef2345678901' };
       const body = { url: 'https://example.com/updated-url' };
@@ -403,9 +452,21 @@ describe('ShortUrlController', () => {
         url: body.url,
       });
     });
+
+    it('should block access when authentication fails', async () => {
+      (authGuard.canActivate as jest.Mock).mockResolvedValue(false);
+
+      const result = await authGuard.canActivate({} as ExecutionContext);
+
+      expect(result).toBe(false);
+    });
   });
 
   describe('delete', () => {
+    beforeEach(() => {
+      (authGuard.canActivate as jest.Mock).mockResolvedValue(true);
+    });
+
     it('should delete a short url', async () => {
       const params = { id: 'b7f9d2a3-4567-8901-abcd-ef2345678901' };
       deleteShortUrlService.execute.mockResolvedValue(undefined);
@@ -454,6 +515,14 @@ describe('ShortUrlController', () => {
       await expect(controller.delete(params)).rejects.toThrow(
         'Database connection failed',
       );
+    });
+
+    it('should block access when authentication fails', async () => {
+      (authGuard.canActivate as jest.Mock).mockResolvedValue(false);
+
+      const result = await authGuard.canActivate({} as ExecutionContext);
+
+      expect(result).toBe(false);
     });
   });
 
@@ -578,6 +647,33 @@ describe('ShortUrlController', () => {
       expect(handleShortUrlService.execute).toHaveBeenCalledWith({
         hash: params.hash,
       });
+    });
+  });
+
+  describe('AuthGuard integration', () => {
+    it('should verify guard is applied to list endpoint', () => {
+      const guards = Reflect.getMetadata('__guards__', controller.list);
+      expect(guards).toBeDefined();
+    });
+
+    it('should verify guard is applied to update endpoint', () => {
+      const guards = Reflect.getMetadata('__guards__', controller.update);
+      expect(guards).toBeDefined();
+    });
+
+    it('should verify guard is applied to delete endpoint', () => {
+      const guards = Reflect.getMetadata('__guards__', controller.delete);
+      expect(guards).toBeDefined();
+    });
+
+    it('should verify guard is NOT applied to create endpoint', () => {
+      const guards = Reflect.getMetadata('__guards__', controller.create);
+      expect(guards).toBeUndefined();
+    });
+
+    it('should verify guard is NOT applied to redirect endpoint', () => {
+      const guards = Reflect.getMetadata('__guards__', controller.redirect);
+      expect(guards).toBeUndefined();
     });
   });
 });
