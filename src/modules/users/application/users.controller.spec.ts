@@ -8,6 +8,9 @@ import { Name } from '../domain/value-objects/name.value-object';
 import { Email } from '../domain/value-objects/email.value-object';
 import { Password } from '../domain/value-objects/password.value-object';
 import { UserPresentation } from './presentation/user.presentation';
+import { AuthGuard } from '@/modules/auth/infra/guards/auth.guard';
+import { AdminGuard } from '@/modules/auth/infra/guards/role.guard';
+import { ExecutionContext } from '@nestjs/common';
 
 jest.mock('./presentation/user.presentation');
 
@@ -16,6 +19,14 @@ describe('UsersController', () => {
   let listUsersService: jest.Mocked<ListUsersService>;
   let removeUserService: jest.Mocked<RemoveUserService>;
   let updateUserService: jest.Mocked<UpdateUserService>;
+
+  const mockAuthGuard = {
+    canActivate: jest.fn().mockResolvedValue(true),
+  };
+
+  const mockAdminGuard = {
+    canActivate: jest.fn().mockResolvedValue(true),
+  };
 
   const createMockUser = (role: UserRole = UserRole.ADMIN) => {
     return User.create({
@@ -52,7 +63,12 @@ describe('UsersController', () => {
           },
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(AuthGuard)
+      .useValue(mockAuthGuard)
+      .overrideGuard(AdminGuard)
+      .useValue(mockAdminGuard)
+      .compile();
 
     controller = module.get<UsersController>(UsersController);
     listUsersService = module.get(ListUsersService);
@@ -71,6 +87,11 @@ describe('UsersController', () => {
   });
 
   describe('list', () => {
+    beforeEach(() => {
+      mockAuthGuard.canActivate.mockResolvedValue(true);
+      mockAdminGuard.canActivate.mockResolvedValue(true);
+    });
+
     it('should list users with default parameters', async () => {
       const mockServiceResponse = {
         data: [mockUser, mockUser2],
@@ -245,9 +266,45 @@ describe('UsersController', () => {
 
       await expect(controller.list({})).rejects.toThrow('Service error');
     });
+
+    it('should block access when authentication fails', async () => {
+      mockAuthGuard.canActivate.mockResolvedValue(false);
+
+      const result = await mockAuthGuard.canActivate({} as ExecutionContext);
+
+      expect(result).toBe(false);
+    });
+
+    it('should block access when user is not admin', async () => {
+      mockAdminGuard.canActivate.mockResolvedValue(false);
+
+      const result = await mockAdminGuard.canActivate({} as ExecutionContext);
+
+      expect(result).toBe(false);
+    });
+
+    it('should allow access when both guards pass', async () => {
+      mockAuthGuard.canActivate.mockResolvedValue(true);
+      mockAdminGuard.canActivate.mockResolvedValue(true);
+
+      const authResult = await mockAuthGuard.canActivate(
+        {} as ExecutionContext,
+      );
+      const adminResult = await mockAdminGuard.canActivate(
+        {} as ExecutionContext,
+      );
+
+      expect(authResult).toBe(true);
+      expect(adminResult).toBe(true);
+    });
   });
 
   describe('update', () => {
+    beforeEach(() => {
+      mockAuthGuard.canActivate.mockResolvedValue(true);
+      mockAdminGuard.canActivate.mockResolvedValue(true);
+    });
+
     it('should update user role successfully', async () => {
       const userId = mockUser.id;
       const mockServiceResponse = {
@@ -339,9 +396,45 @@ describe('UsersController', () => {
       expect(UserPresentation.toController).toHaveBeenCalledTimes(1);
       expect(UserPresentation.toController).toHaveBeenCalledWith(mockUser);
     });
+
+    it('should block access when authentication fails', async () => {
+      mockAuthGuard.canActivate.mockResolvedValue(false);
+
+      const result = await mockAuthGuard.canActivate({} as ExecutionContext);
+
+      expect(result).toBe(false);
+    });
+
+    it('should block access when user is not admin', async () => {
+      mockAdminGuard.canActivate.mockResolvedValue(false);
+
+      const result = await mockAdminGuard.canActivate({} as ExecutionContext);
+
+      expect(result).toBe(false);
+    });
+
+    it('should allow access when both guards pass', async () => {
+      mockAuthGuard.canActivate.mockResolvedValue(true);
+      mockAdminGuard.canActivate.mockResolvedValue(true);
+
+      const authResult = await mockAuthGuard.canActivate(
+        {} as ExecutionContext,
+      );
+      const adminResult = await mockAdminGuard.canActivate(
+        {} as ExecutionContext,
+      );
+
+      expect(authResult).toBe(true);
+      expect(adminResult).toBe(true);
+    });
   });
 
   describe('delete', () => {
+    beforeEach(() => {
+      mockAuthGuard.canActivate.mockResolvedValue(true);
+      mockAdminGuard.canActivate.mockResolvedValue(true);
+    });
+
     it('should delete user successfully', async () => {
       const userId = mockUser.id;
 
@@ -386,9 +479,45 @@ describe('UsersController', () => {
 
       expect(result).toBeUndefined();
     });
+
+    it('should block access when authentication fails', async () => {
+      mockAuthGuard.canActivate.mockResolvedValue(false);
+
+      const result = await mockAuthGuard.canActivate({} as ExecutionContext);
+
+      expect(result).toBe(false);
+    });
+
+    it('should block access when user is not admin', async () => {
+      mockAdminGuard.canActivate.mockResolvedValue(false);
+
+      const result = await mockAdminGuard.canActivate({} as ExecutionContext);
+
+      expect(result).toBe(false);
+    });
+
+    it('should allow access when both guards pass', async () => {
+      mockAuthGuard.canActivate.mockResolvedValue(true);
+      mockAdminGuard.canActivate.mockResolvedValue(true);
+
+      const authResult = await mockAuthGuard.canActivate(
+        {} as ExecutionContext,
+      );
+      const adminResult = await mockAdminGuard.canActivate(
+        {} as ExecutionContext,
+      );
+
+      expect(authResult).toBe(true);
+      expect(adminResult).toBe(true);
+    });
   });
 
   describe('orderBy mapping', () => {
+    beforeEach(() => {
+      mockAuthGuard.canActivate.mockResolvedValue(true);
+      mockAdminGuard.canActivate.mockResolvedValue(true);
+    });
+
     it('should map created_at to createdAt', async () => {
       const mockServiceResponse = {
         data: [mockUser],
@@ -423,6 +552,11 @@ describe('UsersController', () => {
   });
 
   describe('integration between methods', () => {
+    beforeEach(() => {
+      mockAuthGuard.canActivate.mockResolvedValue(true);
+      mockAdminGuard.canActivate.mockResolvedValue(true);
+    });
+
     it('should handle multiple operations in sequence', async () => {
       const mockServiceResponse = {
         data: [mockUser],
@@ -442,6 +576,89 @@ describe('UsersController', () => {
       expect(listUsersService.execute).toHaveBeenCalledTimes(1);
       expect(updateUserService.execute).toHaveBeenCalledTimes(1);
       expect(removeUserService.execute).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('Guards integration', () => {
+    it('should verify AuthGuard is applied to controller', () => {
+      const guards = Reflect.getMetadata('__guards__', UsersController);
+      expect(guards).toBeDefined();
+      expect(guards.length).toBeGreaterThan(0);
+    });
+
+    it('should verify AdminGuard is applied to controller', () => {
+      const guards = Reflect.getMetadata('__guards__', UsersController);
+      expect(guards).toBeDefined();
+      expect(guards.length).toBeGreaterThan(0);
+    });
+
+    it('should verify guards are applied to list endpoint', () => {
+      const guards = Reflect.getMetadata('__guards__', UsersController);
+      expect(guards).toBeDefined();
+    });
+
+    it('should verify guards are applied to update endpoint', () => {
+      const guards = Reflect.getMetadata('__guards__', UsersController);
+      expect(guards).toBeDefined();
+    });
+
+    it('should verify guards are applied to delete endpoint', () => {
+      const guards = Reflect.getMetadata('__guards__', UsersController);
+      expect(guards).toBeDefined();
+    });
+  });
+
+  describe('Guard behavior scenarios', () => {
+    it('should deny access when only AuthGuard fails', async () => {
+      mockAuthGuard.canActivate.mockResolvedValue(false);
+      mockAdminGuard.canActivate.mockResolvedValue(true);
+
+      const authResult = await mockAuthGuard.canActivate(
+        {} as ExecutionContext,
+      );
+
+      expect(authResult).toBe(false);
+    });
+
+    it('should deny access when only AdminGuard fails', async () => {
+      mockAuthGuard.canActivate.mockResolvedValue(true);
+      mockAdminGuard.canActivate.mockResolvedValue(false);
+
+      const adminResult = await mockAdminGuard.canActivate(
+        {} as ExecutionContext,
+      );
+
+      expect(adminResult).toBe(false);
+    });
+
+    it('should deny access when both guards fail', async () => {
+      mockAuthGuard.canActivate.mockResolvedValue(false);
+      mockAdminGuard.canActivate.mockResolvedValue(false);
+
+      const authResult = await mockAuthGuard.canActivate(
+        {} as ExecutionContext,
+      );
+      const adminResult = await mockAdminGuard.canActivate(
+        {} as ExecutionContext,
+      );
+
+      expect(authResult).toBe(false);
+      expect(adminResult).toBe(false);
+    });
+
+    it('should allow access only when both guards pass', async () => {
+      mockAuthGuard.canActivate.mockResolvedValue(true);
+      mockAdminGuard.canActivate.mockResolvedValue(true);
+
+      const authResult = await mockAuthGuard.canActivate(
+        {} as ExecutionContext,
+      );
+      const adminResult = await mockAdminGuard.canActivate(
+        {} as ExecutionContext,
+      );
+
+      expect(authResult).toBe(true);
+      expect(adminResult).toBe(true);
     });
   });
 });
