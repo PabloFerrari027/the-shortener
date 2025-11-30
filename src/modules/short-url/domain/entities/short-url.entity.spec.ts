@@ -133,7 +133,6 @@ describe('ShortUrl', () => {
         hash: 'test123',
         url: 'https://test.com',
       });
-      // Clear creation event
       shortUrl.pullEvents();
     });
 
@@ -203,7 +202,6 @@ describe('ShortUrl', () => {
         url: 'https://test.com',
       });
 
-      // Clear creation event
       shortUrl.pullEvents();
 
       shortUrl.incrementClickCount();
@@ -221,7 +219,6 @@ describe('ShortUrl', () => {
         url: 'https://test.com',
       });
 
-      // Clear creation event
       shortUrl.pullEvents();
 
       shortUrl.remove();
@@ -256,7 +253,7 @@ describe('ShortUrl', () => {
       shortUrl.url = 'https://newurl.com';
 
       const events = shortUrl.pullEvents();
-      expect(events).toHaveLength(3); // create + click + change
+      expect(events).toHaveLength(3);
     });
   });
 
@@ -304,15 +301,18 @@ describe('ShortUrl', () => {
   describe('generateHash', () => {
     it('should generate valid hash for number 0', () => {
       const hash = ShortUrl.generateHash(0);
-      expect(hash).toBe('0');
+
+      expect(hash).toBe('100');
     });
 
     it('should generate valid hash for positive numbers', () => {
       const hash1 = ShortUrl.generateHash(1);
-      expect(hash1).toBe('1');
+
+      expect(hash1).toBe('101');
 
       const hash62 = ShortUrl.generateHash(62);
-      expect(hash62).toBe('10');
+
+      expect(hash62).toBe('110');
 
       const hash123 = ShortUrl.generateHash(123);
       expect(hash123).toBeDefined();
@@ -320,7 +320,7 @@ describe('ShortUrl', () => {
     });
 
     it('should generate valid hash for max value', () => {
-      const maxValue = Math.pow(62, 6) - 1;
+      const maxValue = Math.pow(62, 6) - 3845;
       const hash = ShortUrl.generateHash(maxValue);
       expect(hash).toBeDefined();
       expect(typeof hash).toBe('string');
@@ -333,10 +333,20 @@ describe('ShortUrl', () => {
     });
 
     it('should throw InvalidRangeValueError for numbers exceeding max value', () => {
-      const maxValue = Math.pow(62, 6) - 1;
+      const maxValue = Math.pow(62, 6) - 3845;
       expect(() => {
         ShortUrl.generateHash(maxValue + 1);
       }).toThrow(InvalidRangeValueError);
+    });
+
+    it('should generate unique hashes for sequential numbers', () => {
+      const hash1 = ShortUrl.generateHash(0);
+      const hash2 = ShortUrl.generateHash(1);
+      const hash3 = ShortUrl.generateHash(2);
+
+      expect(hash1).not.toBe(hash2);
+      expect(hash2).not.toBe(hash3);
+      expect(hash1).not.toBe(hash3);
     });
   });
 

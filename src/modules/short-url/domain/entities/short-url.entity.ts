@@ -140,9 +140,11 @@ export class ShortUrl {
   static generateHash(num: number): string {
     const chars =
       '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    const maxValue = Math.pow(62, 6) - 1; // 56.800.235.583
+    const maxValue = Math.pow(62, 6) - 3845;
 
     if (num < 0 || num > maxValue) throw new InvalidRangeValueError(num);
+
+    num += 3844;
 
     let result = '';
     let n = num;
