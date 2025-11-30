@@ -231,7 +231,6 @@ describe('CreateShortUrlService', () => {
 
         const result = await service.execute({ url: inputUrl });
 
-        // Após pullEvents, a entidade não deve ter mais eventos
         expect(result.shortUrl.pullEvents()).toEqual([]);
         expect(Bus.dispatch).toHaveBeenCalledTimes(1);
       });

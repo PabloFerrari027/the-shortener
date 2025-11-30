@@ -83,7 +83,7 @@ describe('User Entity', () => {
 
     beforeEach(() => {
       user = User.create(mockUserProps);
-      user.pullEvents(); // Limpa eventos de criação
+      user.pullEvents();
     });
 
     it('should change user role and create UserRoleChangedEvent', () => {
@@ -118,7 +118,6 @@ describe('User Entity', () => {
       const rootUserEmail = 'root@example.com';
       const originalRootEmail = Env.ROOT_USER_EMAIL;
 
-      // Mock do Env.ROOT_USER_EMAIL
       Object.defineProperty(Env, 'ROOT_USER_EMAIL', {
         value: rootUserEmail,
         writable: true,
@@ -129,13 +128,12 @@ describe('User Entity', () => {
         ...mockUserProps,
         email: Email.create(rootUserEmail),
       });
-      rootUser.pullEvents(); // Limpa eventos de criação
+      rootUser.pullEvents();
 
       expect(() => {
         rootUser.role = UserRole.CLINET;
       }).toThrow(RootUserRoleChangeNotAllowedError);
 
-      // Restaura o valor original
       Object.defineProperty(Env, 'ROOT_USER_EMAIL', {
         value: originalRootEmail,
         writable: true,

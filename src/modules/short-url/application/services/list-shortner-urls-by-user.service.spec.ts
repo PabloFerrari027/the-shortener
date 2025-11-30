@@ -407,7 +407,6 @@ describe('ListShortnerUrlsByUserService', () => {
       it('should handle multiple pages of results', async () => {
         const userId = 'user-many-urls';
 
-        // Page 1
         const mockResponse1 = {
           data: [
             ShortUrl.create({
@@ -427,7 +426,6 @@ describe('ListShortnerUrlsByUserService', () => {
         expect(result1.currentPage).toBe(1);
         expect(result1.totalPages).toBe(3);
 
-        // Page 2
         const mockResponse2 = {
           data: [
             ShortUrl.create({

@@ -344,7 +344,6 @@ describe('UpdateShortUrlService', () => {
 
         const result = await service.execute(input);
 
-        // Após pullEvents, a entidade não deve ter mais eventos
         expect(result.shortUrl.pullEvents()).toEqual([]);
         expect(Bus.dispatch).toHaveBeenCalledTimes(1);
       });
@@ -494,7 +493,6 @@ describe('UpdateShortUrlService', () => {
 
         expect(repository.update).not.toHaveBeenCalled();
         expect(Bus.dispatch).not.toHaveBeenCalled();
-        // URL não deve ter sido alterada
         expect(mockShortUrl.url).toBe('https://authfail.com');
       });
     });
