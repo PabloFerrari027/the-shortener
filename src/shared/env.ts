@@ -8,7 +8,7 @@ export class Env {
     return process.env.APP_URL!;
   }
   static get NODE_ENV(): NODE_ENV {
-    return process.env.APP_URL as NODE_ENV;
+    return process.env.NODE_ENV as NODE_ENV;
   }
   static get PORT(): number {
     return Number(process.env.PORT);
