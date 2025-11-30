@@ -20,8 +20,6 @@ class CustomBullQueue extends Queue {
       connection: {
         host: Env.REDIS_HOST,
         port: Env.REDIS_PORT,
-        password: Env.REDIS_PASS,
-        username: Env.REDIS_USERNAME,
       },
       defaultJobOptions: {
         removeOnComplete: true,
@@ -54,8 +52,6 @@ class CustomBullQueue extends Queue {
         connection: {
           host: Env.REDIS_HOST,
           port: Env.REDIS_PORT,
-          password: Env.REDIS_PASS,
-          username: Env.REDIS_USERNAME,
         },
         concurrency: 1,
       },
