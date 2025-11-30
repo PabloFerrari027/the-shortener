@@ -9,8 +9,8 @@ import { PgShortUrlRepository } from './modules/short-url/infra/repositories/pg-
 import { PgUsersRepository } from './modules/users/infra/repositories/pg-users.repository';
 import { BcrtiptHasherAdapter } from './shared/infra/adapters/bcript-hasher.adapter';
 import { BullQueueAdapter } from './shared/infra/adapters/bull-queue.adapter';
-import { InMemoryNotificationAdapter } from './shared/infra/adapters/in-memory-notification.adapter';
 import { JWTEncodingAdapter } from './shared/infra/adapters/jwt-encoding.adapter';
+import { NodemailerNotificationProvider } from './shared/infra/adapters/nodemailer-notification.adapter';
 
 @Global()
 @Module({
@@ -63,7 +63,7 @@ import { JWTEncodingAdapter } from './shared/infra/adapters/jwt-encoding.adapter
     {
       provide: 'NotificationPort',
       useFactory() {
-        return new InMemoryNotificationAdapter();
+        return new NodemailerNotificationProvider();
       },
     },
     {

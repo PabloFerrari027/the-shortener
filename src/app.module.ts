@@ -8,12 +8,12 @@ import { PgSessionsRepository } from './modules/auth/infra/repositories/pg-sessi
 import { PgUsersRepository } from './modules/users/infra/repositories/pg-users.repository';
 import { JWTEncodingAdapter } from './shared/infra/adapters/jwt-encoding.adapter';
 import { BcrtiptHasherAdapter } from './shared/infra/adapters/bcript-hasher.adapter';
-import { InMemoryNotificationAdapter } from './shared/infra/adapters/in-memory-notification.adapter';
 import { BullQueueAdapter } from './shared/infra/adapters/bull-queue.adapter';
 import { VerificationCodeTemplate } from './modules/auth/templates/verification-code.template';
 import { DomainEventsManager } from './shared/infra/managers/domain-events.manager';
 import { SessionCreatedHandler } from './modules/auth/application/handlers/events/session-created.handler';
 import { UsersModule } from './modules/users/users.module';
+import { NodemailerNotificationProvider } from './shared/infra/adapters/nodemailer-notification.adapter';
 
 @Global()
 @Module({
@@ -68,7 +68,7 @@ import { UsersModule } from './modules/users/users.module';
     {
       provide: 'NotificationPort',
       useFactory() {
-        return new InMemoryNotificationAdapter();
+        return new NodemailerNotificationProvider();
       },
     },
     {

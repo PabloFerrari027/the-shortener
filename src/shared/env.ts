@@ -1,8 +1,6 @@
 export enum NODE_ENV {
   'DEVELOPMENT' = 'DEVELOPMENT',
   'PRODUCTION' = 'PRODUCTION',
-  'TEST-UNIT' = 'TEST-UNIT',
-  'TEST-E2E' = 'TEST-E2E',
 }
 
 export class Env {
@@ -47,5 +45,11 @@ export class Env {
   }
   static get ROOT_USER_EMAIL(): string {
     return process.env.ROOT_USER_EMAIL!;
+  }
+  static get SMTP_EMAIL(): string {
+    return process.env.SMTP_EMAIL!;
+  }
+  static get SMTP_PASS(): string {
+    return process.env.SMTP_PASS!;
   }
 }
