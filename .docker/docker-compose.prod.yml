@@ -21,13 +21,22 @@ services:
   redis:
     image: redis:7
     restart: always
-    command: ["redis-server", "--appendonly", "yes"]
+    command: >
+      redis-server
+      --appendonly yes
+      --requirepass ${REDIS_PASS}
+      --user ${REDIS_USERNAME} on >${REDIS_PASS} ~* &* +@all
     ports:
       - "${REDIS_PORT}:6379"
     volumes:
       - redis_data:/data
     networks:
       - app_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:

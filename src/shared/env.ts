@@ -31,8 +31,17 @@ export class Env {
   static get ENCODE_SECRET(): string {
     return process.env.ENCODE_SECRET!;
   }
-  static get REDIS_URL(): string {
-    return process.env.REDIS_URL!;
+  static get REDIS_HOST(): string {
+    return process.env.REDIS_HOST!;
+  }
+  static get REDIS_PORT(): number {
+    return parseInt(process.env.REDIS_PORT!);
+  }
+  static get REDIS_PASS(): string {
+    return process.env.REDIS_PASS!;
+  }
+  static get REDIS_USERNAME(): string {
+    return process.env.REDIS_USERNAME!;
   }
   static get TEMPLATE_LANGUAGE(): string {
     return process.env.TEMPLATE_LANGUAGE!;
