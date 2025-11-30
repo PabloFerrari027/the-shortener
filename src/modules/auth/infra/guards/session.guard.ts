@@ -26,13 +26,14 @@ export class SessionGuard implements CanActivate {
       const request = context.switchToHttp().getRequest();
       const authHeader = request.headers['authorization'];
 
-      if (!authHeader) return false;
+      if (!authHeader) return true;
 
-      const rawToken: string = authHeader.split(' ')[1] ?? '';
+      const rawToken: string = authHeader?.split(' ')[1];
 
-      if (!rawToken) return false;
+      if (!rawToken) return true;
 
       const decodedToken = await this.encodingPort.dencode(rawToken);
+
       const payload: Payload = JSON.parse(String(decodedToken));
 
       const session = await this.sessionsRepository.findById(payload.sessionId);
